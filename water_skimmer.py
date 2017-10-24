@@ -51,6 +51,7 @@ LINKFILE = "links.txt"
 # TODO Preserve at least some links from previous iteration
 # TODO Handle getting 0 successful connections
 # TODO Add Error log
+# TODO Make time delay lower
 # TODO fix subdir weighting (e.g. codereview.stackexchange.com, login.website.com, yro.slashdot))
 # TODO Figure out youtu.be 
 # TODO Total refactor
