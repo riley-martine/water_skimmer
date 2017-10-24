@@ -72,10 +72,11 @@ def get_links(base):
         truncated_base = truncated_base[:-1]
     print("|| Getting links from " + truncated_base)
     try:
-        local = urllib.request.urlopen(base)
+        local = urllib.request.urlopen(base, timeout=4)
         local_info = local.info()
 
         if local.info().get_content_maintype() !=  "text":
+            print("X| Error.")
             return []
 
         local = local.read()
