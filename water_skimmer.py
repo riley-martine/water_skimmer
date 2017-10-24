@@ -51,6 +51,7 @@ LINKFILE = "links.txt"
 # TODO Preserve at least some links from previous iteration
 # TODO Handle getting 0 successful connections
 # TODO Add Error log
+# TODO let me exit!!
 # TODO Make time delay lower
 # TODO fix subdir weighting (e.g. codereview.stackexchange.com, login.website.com, yro.slashdot))
 # TODO Figure out youtu.be 
@@ -65,6 +66,10 @@ def get_links(base):
     o = urlparse(base)
     truncated_base = o.netloc + o.path
     truncated_base = (truncated_base[:75] + '..') if len(truncated_base) > 77 else truncated_base
+    if truncated_base.startswith('www.'):
+        truncated_base = truncated_base[4:]
+    if truncated_base.endswith('/'):
+        truncated_base = truncated_base[:-1]
     print("|| Getting links from " + truncated_base)
     try:
         local = urllib.request.urlopen(base)
