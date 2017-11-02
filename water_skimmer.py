@@ -41,6 +41,7 @@ SEEDS = [
 
 # Where links are stored
 LINKFILE = "links.txt"
+LINKDIR = "links"
 
 
 # TODO Async requests
@@ -159,6 +160,9 @@ def make_me_a_file():
 
 
 if __name__ == "__main__":
+    if not os.path.isdir(LINKDIR):
+        os.mkdir(LINKDIR)
+    os.chdir(LINKDIR)
     for file_num in range(1, 21):
         make_me_a_file()
         os.rename(LINKFILE, str(file_num).zfill(2) + LINKFILE)
