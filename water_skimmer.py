@@ -6,6 +6,7 @@ import os
 import random
 import tldextract
 import multiprocessing
+from shutil import get_terminal_size
 
 SEEDS = [
     "https://news.ycombinator.com/",
@@ -61,22 +62,28 @@ LINKDIR = "links"
 def domain(url):
     return tldextract.extract(url).domain
 
-def get_links(base):
+def print_msg(msg, var):
+    columns, lines = get_terminal_size( (80, 20) )
+    len_msg = len(msg) + 1
+    len_var = columns - len_msg
+    truncated_var = (var[:len_var-2] + '..') if len(var) > len_var else var
+    print(msg + ' ' + truncated_var)
 
+
+def get_links(base):
     o = urlparse(base)
     truncated_base = o.netloc + o.path
-    truncated_base = (truncated_base[:75] + '..') if len(truncated_base) > 77 else truncated_base
     if truncated_base.startswith('www.'):
         truncated_base = truncated_base[4:]
     if truncated_base.endswith('/'):
         truncated_base = truncated_base[:-1]
-    print("|| Getting links from " + truncated_base)
+    print_msg("|| Getting links from", truncated_base)
     try:
         local = urllib.request.urlopen(base, timeout=10)
         local_info = local.info()
 
         if local.info().get_content_maintype() !=  "text":
-            print("X| Error with " + truncated_base)
+            print_msg("X| Error with", truncated_base)
             return []
 
         local = local.read()
@@ -86,10 +93,10 @@ def get_links(base):
         links = [link for link in links 
             if link and (link.startswith('http') or link.startswith('www'))]
         links = list(filter(lambda x: domain(x) != domain(base), links))
-        print("|| Success with " + truncated_base)
+        print_msg("|| Success with", truncated_base)
         return links
     except:
-        print("X| Error with " + truncated_base)
+        print_msg("X| Error with", truncated_base)
         return  []
 
 
