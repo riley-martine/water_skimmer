@@ -5,6 +5,7 @@ import os.path
 import os
 import random
 import tldextract
+import multiprocessing
 
 SEEDS = [
     "https://news.ycombinator.com/",
@@ -44,7 +45,6 @@ LINKFILE = "links.txt"
 LINKDIR = "links"
 
 
-# TODO Async requests
 # TODO Open in Browser
 # TODO Deal with timeouts (websites taking too long to respond) better
 # TODO Stop incentivizing websites with a lot of self links
@@ -52,7 +52,6 @@ LINKDIR = "links"
 # TODO Preserve at least some links from previous iteration
 # TODO Handle getting 0 successful connections
 # TODO Add Error log
-# TODO let me exit!!
 # TODO Make time delay lower
 # TODO fix subdir weighting (e.g. codereview.stackexchange.com, login.website.com, yro.slashdot))
 # TODO Figure out youtu.be 
@@ -73,11 +72,11 @@ def get_links(base):
         truncated_base = truncated_base[:-1]
     print("|| Getting links from " + truncated_base)
     try:
-        local = urllib.request.urlopen(base, timeout=4)
+        local = urllib.request.urlopen(base, timeout=10)
         local_info = local.info()
 
         if local.info().get_content_maintype() !=  "text":
-            print("X| Error.")
+            print("X| Error with " + truncated_base)
             return []
 
         local = local.read()
@@ -86,11 +85,11 @@ def get_links(base):
         links = [link.get('href') for link in soup.find_all('a')]
         links = [link for link in links 
             if link and (link.startswith('http') or link.startswith('www'))]
-        links = filter(lambda x: domain(x) != domain(base), links)
-        print("|| Success!")
+        links = list(filter(lambda x: domain(x) != domain(base), links))
+        print("|| Success with " + truncated_base)
         return links
     except:
-        print("X| Error.")
+        print("X| Error with " + truncated_base)
         return  []
 
 
@@ -125,19 +124,21 @@ def is_good_link(link):
 
     return True
 
+flatten = lambda l: [item for sublist in l for item in sublist]
+
 def iterate_links():
     with open(LINKFILE, 'r') as f:
-        links = [link.strip() for link in f.readlines() if link is not '\n']
+        sources = [link.strip() for link in f.readlines() if link is not '\n']
 
-    links = filter(is_good_link, links)
+    sources = filter(is_good_link, sources)
         
 
-    linked = []
-    for source in links:
-        for destination in get_links(source):
-            linked.append(destination)
+    pool = multiprocessing.Pool(4)
+    linked = flatten(pool.map(get_links, sources))
+    pool.close()
 
     linked = list(set(linked))
+    linked = list(filter(is_good_link, linked))
     random.shuffle(linked)
 
     with open(LINKFILE, 'w') as f:
@@ -147,8 +148,11 @@ def iterate_links():
 
 def make_me_a_file():
     print("Seeding...")
-    for seed in SEEDS:
-        write_links(get_links(seed))
+    pool = multiprocessing.Pool(4)
+    to_write = pool.map(get_links, SEEDS)
+    pool.close()
+    for seed_links in to_write:
+        write_links(seed_links)
     print("Done seeding.")
     reduce_links()
 
@@ -163,6 +167,9 @@ if __name__ == "__main__":
     if not os.path.isdir(LINKDIR):
         os.mkdir(LINKDIR)
     os.chdir(LINKDIR)
+    real_file_num = 0
     for file_num in range(1, 21):
         make_me_a_file()
-        os.rename(LINKFILE, str(file_num).zfill(2) + LINKFILE)
+        while os.path.exists(str(real_file_num).zfill(3) + LINKFILE):
+            real_file_num += 1
+        os.rename(LINKFILE, str(real_file_num).zfill(3) + LINKFILE)
