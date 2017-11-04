@@ -18,3 +18,4 @@ To find "interesting" URLs, run `python3 findinteresting.py`. This will run on a
 
 ## Todos
 [ ] Add todos
+[ ] Add tests
