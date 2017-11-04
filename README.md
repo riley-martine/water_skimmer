@@ -15,3 +15,6 @@ After running `water_skimmer.py`, you probably want to see what kind of links it
 "Interesting" here is defined as the links whose domains (or rather, the domains of the URLs the links resolve to) being ranked as uncommon by the alexa top 1 million, or being unranked.
 
 To find "interesting" URLs, run `python3 findinteresting.py`. This will run on all the URLs in all the files in the `links` directory, and print out the most interesting ones (up to 100).
+
+## Todos
+[ ] Add todos
