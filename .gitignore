@@ -1,2 +1,6 @@
 venv/ 
 *Run/
+links/*
+top-1m.csv
+*.swp
+*.pyc

@@ -1,10 +1,17 @@
-# water_skimmer
-Like a spider, but on the surface. Pulls links from seed websites that do not link to the same domain, choose 50 at random, repeat with new links.
+# water Skimmer
+Like a spider, but on the surface. Pulls from seed websites links  that do not link to the same domain, chooses 50 at random, repeats with new links.
 
 
 ## Usage
-`pip install -r requirements.txt`
+`pip3 install -r requirements.txt`
 
-`python water_skimmer.py`
+`python3 water_skimmer.py`
 
 Program will run for 5 iterations, 20 times. Final links will be output to `links/XXlinks.txt`, where XX is the number 1-20 of the current time run.
+
+## Analyzing
+After running `water_skimmer.py`, you probably want to see what kind of links it found for you. You can comb through these by hand, but I also wrote a tool to help find the interesting ones.
+
+"Interesting" here is defined as the links whose domains (or rather, the domains of the URLs the links resolve to) being ranked as uncommon by the alexa top 1 million, or being unranked.
+
+To find "interesting" URLs, run `python3 findinteresting.py`. This will run on all the URLs in all the files in the `links` directory, and print out the most interesting ones (up to 100). It takes a while. I am working on that.
