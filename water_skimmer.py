@@ -22,8 +22,6 @@ SEEDS = [
     "http://metanews.com/",
     "http://txchnologist.com/",
     "https://wordpress.org/showcase/",
-    "http://slatestarcodex.com/",
-    "http://sidebar.io/",
     "https://slashdot.org/",
     "http://digg.com/",
     "https://voat.co/v/all",
@@ -138,7 +136,8 @@ def is_good_link(link):
 
     return True
 
-flatten = lambda l: [item for sublist in l for item in sublist]
+# Could replace this with itertools.chain
+flatten = lambda l: [item for sublist in l for item in sublist] 
 
 def iterate_links():
     """Take the links in LINKFILE, get their links, choose 50, write those back to LINKFILE."""
@@ -183,7 +182,7 @@ if __name__ == "__main__":
         os.mkdir(LINKDIR)
     os.chdir(LINKDIR)
     real_file_num = 0
-    for file_num in range(1, 21):
+    for file_num in range(1, 21): # Can we.. multiprocess _this_?
         make_me_a_file()
         while os.path.exists(str(real_file_num).zfill(3) + LINKFILE):
             real_file_num += 1
